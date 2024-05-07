@@ -1,0 +1,189 @@
+#include<iostream>
+#include<fstream>
+#include "glut.h"
+#include <vector>
+
+using namespace std;
+
+// Множество точек
+
+vector<pair<float, float>> bigTriangle;
+
+vector<pair<float, float>> miniTriangle;
+
+void init() 
+{
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	// Ортогональная проекция
+	gluOrtho2D(-5, 10, -5, 10);
+	glMatrixMode(GL_MODELVIEW);
+}
+
+void display()
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	// Рисуем внешний треугольник
+
+	glBegin(GL_TRIANGLES); 
+	glColor3f(1.0f, 0.0f, 0.0f); // красный цвет
+	glVertex2f(bigTriangle[0].first, bigTriangle[0].second); 
+	glVertex2f(bigTriangle[1].first, bigTriangle[1].second); 
+	glVertex2f(bigTriangle[2].first, bigTriangle[2].second); 
+	glEnd(); 
+
+	// Рисуем внутренний треугольник, расположенный внутри большого треугольника
+
+	glBegin(GL_TRIANGLES); 
+	glColor3f(0.0f, 0.0f, 1.0f); // синий цвет
+	glVertex2f(miniTriangle[0].first, miniTriangle[0].second); 
+	glVertex2f(miniTriangle[1].first, miniTriangle[1].second); 
+	glVertex2f(miniTriangle[2].first, miniTriangle[2].second); 
+	glEnd();
+
+	glFlush(); // Принудительная отрисовка текущего кадра
+
+	glLoadIdentity();
+	glutSwapBuffers();
+}
+
+bool isPointInTriangle(double x, double y, double x1, double y1, double x2, double y2, double x3, double y3) 
+{
+	double areaMainTriangle = abs((x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1));
+	double areaSubTriangle1 = abs((x - x1) * (y2 - y1) - (x2 - x1) * (y - y1));
+	double areaSubTriangle2 = abs((x - x2) * (y3 - y2) - (x3 - x2) * (y - y2));
+	double areaSubTriangle3 = abs((x - x3) * (y1 - y3) - (x1 - x3) * (y - y3));
+
+	if (!areaSubTriangle1 || !areaSubTriangle2 || !areaSubTriangle3)
+	{
+		return false;
+	}
+	if (abs(areaMainTriangle) == 0)
+	{
+		return false;
+	}
+
+	// Сумма площадей треугольников должна быть равна площади основного треугольника
+
+	if (abs(areaMainTriangle - (areaSubTriangle1 + areaSubTriangle2 + areaSubTriangle3)) == 0) 
+	{
+		return true;
+	}
+	return false;
+}
+
+void triangle(vector<pair<float, float>>& p)
+{
+	bool isCheck = 1;
+	double a, b, c;
+
+	// проверка для каждой комбинации i, j, k всевозможных точек f 
+
+	for (int i = 0; i < p.size() && isCheck; i++)
+	{
+		for (int j = i + 1; j < p.size() && isCheck; j++) 
+		{
+			for (int k = j + 1; k < p.size() && isCheck; k++)
+			{
+				miniTriangle.clear();
+				for (int f = 0; f < p.size(); f++) 
+				{
+					if (f != i && f != j && f != k && miniTriangle.size() < 3)
+					{
+
+						// проверка лежит ли p[f] в бол. треугольнике и не принадлежит вершинам мал. треугольника
+
+						if (isPointInTriangle(p[f].first, p[f].second, p[i].first, p[i].second, p[j].first, p[j].second, p[k].first, p[k].second))  
+						{
+							int check = 1;
+
+							if (miniTriangle.size() == 2 && check == 1)
+							{
+								if (miniTriangle[0].second == miniTriangle[1].second && miniTriangle[1].second == p[f].second) 
+								{
+									check = 0;
+									break;
+								}
+								if (miniTriangle[0].first == miniTriangle[1].first && miniTriangle[1].first == p[f].first) 
+								{
+									check = 0;
+									break;
+								}
+								a = miniTriangle[0].second ? miniTriangle[0].first / miniTriangle[0].second : -1;
+								b = miniTriangle[1].second ? miniTriangle[1].first / miniTriangle[1].second : -1;
+								c = p[f].second ? p[f].first / p[f].second : -1;
+								if (a == -1 || b == -1 || c == -1)
+								{
+									if (a == b && a == c) 
+									{
+										check = 0;
+									}
+									if (a == -1 && b == -1 || c == -1 && b == -1 || a == -1 && c == -1) 
+									{
+										check = 2;
+									}
+								}
+							}
+							for (int h = 0; h < miniTriangle.size() && check == 1; h++)
+							{
+								if (p[f] == miniTriangle[h])
+								{
+									check = 0;
+									break;
+								}
+							}
+							if (check)
+							{
+								miniTriangle.push_back(p[f]);
+							}
+
+						}
+					}
+				}
+				if (miniTriangle.size() >= 3)
+				{
+					bigTriangle.push_back(p[i]);
+					bigTriangle.push_back(p[j]);
+					bigTriangle.push_back(p[k]);
+					/*for (int t = 0; t < 3; t++)
+					{
+						cout << miniTriangle[t].first << ' ' << miniTriangle[t].second << '\n';
+					}*/
+					isCheck = 0;
+				}
+			}
+		}
+	}
+}
+
+int main(int argc, char** argv)
+{
+
+	glutInit(&argc, argv);
+
+	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+	glutInitWindowSize(1000, 1000);
+
+	vector<pair<float, float>> points = { {0.0, 10.0}, {10.0, 0.0}, {0.0, 0.0}, {1.0, 1.0}, {3.0, 1.0}, {1.0, 3.0} };
+
+/*	int n;
+	cin >> n;
+	vector<pair<float, float>> points(n);
+	for (int i = 0; i < n; ++i) 
+	{
+		cin >> points[i].first >> points[i].second;
+	}*/
+
+	triangle(points);
+	if (bigTriangle.size() != 3) 
+	{
+		cout << "No more points";
+	}
+
+	glutCreateWindow("Two Triangles");
+	init();
+	glutDisplayFunc(display);
+	glutMainLoop();
+}
