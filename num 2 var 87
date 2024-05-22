@@ -114,7 +114,7 @@ int main(int argc, char** argv)
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 	glutInitWindowSize(1200, 1000);
-	glutCreateWindow("laba 10 num 2");
+	glutCreateWindow("laba 7 num 2");
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	gluOrtho2D(0, 1000, 0, 1000);
 	OP.resize(OP.size() + 1);
