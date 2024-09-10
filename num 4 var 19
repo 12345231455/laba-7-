@@ -1,228 +1,284 @@
-#include <iostream>
-#include <vector>
-#include <cmath>
+#include<iostream>
+#include<fstream>
+#include<iomanip>
+#include<ctime>
+#include<cmath>
+#include<algorithm>
+#include<vector>
+#include<string>
+#include<cstdlib>
+#include<Windows.h>
 #include "glut.h"
 
 using namespace std;
 
-int equation = 3;
-double M_PI = 3.14;
-double M_E = 2.71;
 
-int width = 1000;
-int height = 800;
-
-struct point
+class Point
 {
-	double x, y;
+private:
+	double x;
+	double y;
+public:
 
-	void rand_point2(double w1, double w2, double h1 = -height, double h2 = height, int precision = 10000) 
+	void setX(double x)
 	{
-		if (w2 == w1)
-			x = w1;
-		else
-			x = ((rand() * rand() % (int)round((w2 - w1) * precision)) + w1 * precision) / precision;
-		if (h2 == h1)
-			y = h1;
-		else
-			y = ((rand() * rand() % (int)round((h2 - h1) * precision)) + h1 * precision) / precision;
+		this->x = x;
+	}
+	void setY(double y)
+	{
+		this->y = y;
+	}
+	double& getX()
+	{
+		return x;
+	}
+	double& getY()
+	{
+		return y;
+	}
+};
+
+class Line
+{
+private:
+	Point first;
+	Point second;
+public:
+
+	void setFirst(Point& a)
+	{
+		first = a;
+	}
+	void setSecond(Point& a)
+	{
+		second = a;
+	}
+	Point& getFirst()
+	{
+		return first;
+	}
+	Point& getSecond()
+	{
+		return second;
 	}
 };
 
 
-bool equation_a(point p) 
+Point tmp;
+int amount_points = 0;
+int amount_points_of_figure = 0;
+double Pi = 3.14, e = 2.71;
+int n;
+
+
+double fRand(double fMin, double fMax)
 {
-	return p.x >= -1 && p.x <= 1 && p.y <= pow(p.x, 2) * sin(2 * p.x) && 0 <= p.y;
+	double f = (double)rand() / RAND_MAX;
+	return fMin + f * (fMax - fMin);
 }
 
-bool equation_b(point p) 
+Point make_random_point()
 {
-	return p.x >= -M_PI / 5 && p.x <= M_PI / 5 && (0 <= p.y && p.y <= pow(sin(p.x), 3) || 0 >= p.y && p.y >= pow(sin(p.x), 3));
+	Point a;
+	a.setX(fRand(-4, 4));
+	a.setY(fRand(-4, 4));
+	return a;
 }
 
-bool equation_c(point p) 
+bool in_figure1(Point& a)
 {
-	return p.x >= 3 && p.x <= 11 && (0 <= p.y && p.y <= 1.0 / (4 * p.x * p.x - 9) || 0 >= p.y && p.y >= 1.0 / (4 * p.x * p.x - 9));
+	if (a.getX() >= -1 && a.getX() <= 1 && a.getY() <= pow(a.getX(), 2) * sin(2 * a.getX()) && 0 <= a.getY())
+	{
+		return true;
+	}
+	return false;
 }
 
-bool equation_d(point p) 
+bool in_figure2(Point& a)
 {
-	return p.x >= -1 && p.x <= 1 && (0 <= p.y && p.y <= pow(M_E, 2 * p.x - 1) / pow(M_E, p.x) || 0 >= p.y && p.y >= pow(M_E, 2 * p.x - 1) / pow(M_E, p.x));
+
+	if ((a.getX() >= (- Pi / 5)) && (a.getX() <= (Pi / 5)) && (0 <= a.getY() && a.getY() <= (1-(sin(a.getX()) / cos(a.getX())))/ (1 + (sin(a.getX()) / cos(a.getX())))))
+	{
+		return true;
+	}
+	return false;
 }
 
-void init()
+bool in_figure3(Point& a)
 {
-	glClearColor(0.0, 0.0, 0.0, 0.0);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluOrtho2D(0, width, 0, height);
-	glClear(GL_COLOR_BUFFER_BIT);
-	glMatrixMode(GL_MODELVIEW);
+	if (a.getX() >= 1 && a.getX() <= 2 && (a.getY() <= 0 && a.getY() >= (2 - 5 * a.getX()) / sqrt(4*pow(a.getX(), 2) + 9*a.getX())))
+	{
+		return true;
+	}
+	return false;
+}
+
+bool in_figure4(Point& a)
+{
+	if (a.getX() >= -2 && a.getX() <= 3 && a.getY() >= 0 && a.getY() <= (1 / (1+pow(e,2))))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+void find_area(double N, double k, double S0)
+{
+	double result = (k / N) * S0;
+	cout << result;
 }
 
 void display()
 {
+
 	glClear(GL_COLOR_BUFFER_BIT);
-	glFlush();
-}
+	glLoadIdentity();
+	glPointSize(1);
+	for (int i = 0; i < 1000000; i++)
+	{
+		glBegin(GL_POINTS);
+		tmp = make_random_point();
+		if (n == 1)
+		{
+			if (in_figure1(tmp))
+			{
+				glColor3d(0.0, 1.0, 0.0);
+				glVertex2d(tmp.getX(), tmp.getY());
+				amount_points_of_figure++;
+			}
+			else
+			{
+				glColor3d(0.0, 0.0, 1.0);
+				glVertex2d(tmp.getX(), tmp.getY());
+				amount_points++;
+			}
+		}
+		if (n == 2)
+		{
+			if (in_figure2(tmp))
+			{
+				glColor3d(0.0, 1.0, 0.0);
+				glVertex2d(tmp.getX(), tmp.getY());
+				amount_points_of_figure++;
+			}
+			else
+			{
+				glColor3d(0.0, 0.0, 1.0);
+				glVertex2d(tmp.getX(), tmp.getY());
+				amount_points++;
+			}
+		}
+		if (n == 3)
+		{
+			if (in_figure3(tmp))
+			{
+				glColor3d(0.0, 1.0, 0.0);
+				glVertex2d(tmp.getX(), tmp.getY());
+				amount_points_of_figure++;
+			}
+			else
+			{
+				glColor3d(0.0, 0.0, 1.0);
+				glVertex2d(tmp.getX(), tmp.getY());
+				amount_points++;
+			}
+		}
+		if (n == 4)
+		{
+			if (in_figure4(tmp))
+			{
+				glColor3d(0.0, 1.0, 0.0);
+				glVertex2d(tmp.getX(), tmp.getY());
+				amount_points_of_figure++;
+			}
+			else
+			{
+				glColor3d(0.0, 0.0, 1.0);
+				glVertex2d(tmp.getX(), tmp.getY());
+				amount_points++;
+			}
+		}
 
-void OXY()
-{
-	glBegin(GL_LINES);
-	glColor3f(1.0, 0.0, 0.0);
-
-	glVertex2i(0, -height);
-	glVertex2i(0, height);
-	glVertex2i(-width, 0);
-	glVertex2i(width, 0);
-
+	}
 	glEnd();
+	find_area(amount_points, amount_points_of_figure, 64);
+	glutSwapBuffers();
 	glFlush();
+	return;
 }
 
-void draw_point(const point& A, double R, double G, double B, double size)
+void timer(int)
 {
-	glPointSize(size);
-	glBegin(GL_POINTS);
-	glColor3f(R, G, B);
-	glVertex2i(A.x * 200, A.y * 200);
-	glEnd();
-	glFlush();
-}
-
-void solve4()
-{
+	glutPostRedisplay();
+	glutTimerFunc(1000 / 60, timer, 0);
 	display();
-
-	int k = 1000000;
-	point p;
-	int count = 0;
-	double S = 0;
-	double R, G, B;
-	double a = 0, b = 0;
-	double ay = -2, by = 2;
-
-	switch (equation) 
-	{
-	case 0:
-	{
-		int Scale = 600;
-
-		a = -1, b = 1;
-		for (int i = 0; i < k; i++)
-		{
-			p.rand_point2(a, b, ay, by);
-			if (equation_a(p))
-			{
-				count++;
-				double R, G, B;
-				R = ((rand() % 18) - 6) / 10.0;
-				G = ((rand() % 18) - 4) / 10.0;
-				B = ((rand() % 18) - 3) / 10.0;
-				draw_point(p, R, G, B, 2);
-			}
-		}
-		break;
-	}
-	case 1:
-	{
-		int Scale = 300;
-
-		a = -2 * M_PI / 3, b = 2 * M_PI / 3;
-		for (int i = 0; i < k; i++)
-		{
-			p.rand_point2(a, b, ay, by);
-			if (equation_b(p))
-			{
-				count++;
-				R = ((rand() % 18) - 6) / 10.0;
-				G = ((rand() % 18) - 4) / 10.0;
-				B = ((rand() % 18) - 3) / 10.0;
-				draw_point(p, R, G, B, 1);
-			}
-		}
-		break;
-	}
-	case 2:
-	{
-		int Scale = 80;
-
-		a = 3, b = 11;
-		R = ((rand() % 18) - 6) / 10.0;
-		G = ((rand() % 18) - 4) / 10.0;
-		B = ((rand() % 18) - 3) / 10.0;
-		for (int i = 0; i < k; i++)
-		{
-			p.rand_point2(a, b, ay, by);
-			if (equation_c(p))
-			{
-				count++;
-				draw_point(p, R, G, B, 2);
-			}
-		}
-		break;
-	}
-	case 3:
-	{
-		int Scale = 600;
-
-		a = -1, b = 1;
-		for (int i = 0; i < k; i++)
-		{
-			p.rand_point2(a, b, ay, by);
-
-			if (equation_d(p))
-			{
-				count++;
-				R = ((rand() % 18) - 6) / 10.0;
-				G = ((rand() % 18) - 4) / 10.0;
-				B = ((rand() % 18) - 3) / 10.0;
-				draw_point(p, R, G, B, 2);
-			}
-		}
-		break;
-	}
-	}
-	S = count * 1.0 * (b - a) * (by - ay) / k;
-	int Scale = 80;
-	cout << S << "\n";
 }
 
-void keyboard(unsigned char key, int x, int y) 
+void reshape(int w, int h)
 {
-	switch (key) 
-	{
-	case 27:
-		exit(0);
-		break;
-	case 'a':
-		if (equation == 0)
-			equation = 3;
-		else
-			equation--;
-		break;
-	case 'd':
-		if (equation == 3)
-			equation = 0;
-		else
-			equation++;
-		break;
-	}
-	solve4();
+	glViewport(0, 0, 1000, 1000);
+	glMatrixMode(GL_PROJECTION_MATRIX);
+	glLoadIdentity();
+	gluOrtho2D(0, 1000, 0, 1000);
+	glMatrixMode(GL_MODELVIEW);
+}
+void init()
+{
+	// Цвет фона
+	glClearColor(1.0, 1.0, 1.0, 1.0);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	// Ортогональная проекция
+	gluOrtho2D(-2, 2, -2, 2);
+	glMatrixMode(GL_MODELVIEW);
 }
 
 int main(int argc, char** argv)
 {
-	int Scale = 80;
-
+	srand(time(0));
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_RGB);
-	glutInitWindowSize(width, height);
-	glutInitWindowPosition(400, 100);
-	glutCreateWindow("");
-	init();
-	OXY();
-	glutDisplayFunc(solve4);
-	glutKeyboardFunc(keyboard);
-	glutMainLoop();
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+
+	setlocale(LC_ALL, "ru");
+	cout << "Выберите номер фигуры ";
+	cin >> n;
+	switch (n)
+	{
+	case 1:
+		glutInitWindowSize(1000, 1000);        
+		glutCreateWindow("Picture 1");
+		init();
+		glutDisplayFunc(display);
+		glutReshapeFunc(reshape);
+		glutMainLoop();
+
+	case 2:
+		glutInitWindowSize(1000, 1000);        
+		glutCreateWindow("Picture 2");
+		init();
+		glutDisplayFunc(display);
+		glutReshapeFunc(reshape);
+		glutMainLoop();
+
+	case 3:
+		glutInitWindowSize(1000, 1000);         
+		glutCreateWindow("Picture 3");
+		init();
+		glutDisplayFunc(display);
+		glutReshapeFunc(reshape);
+		glutMainLoop();
+
+	case 4:
+		glutInitWindowSize(1000, 1000);        
+		glutCreateWindow("Picture 4");
+		init();
+		glutDisplayFunc(display);
+		glutReshapeFunc(reshape);
+		glutMainLoop();
+
+	case 5:
+		break;
+	}
+
 }
