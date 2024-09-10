@@ -1,13 +1,5 @@
 #include<iostream>
-#include<fstream>
-#include<iomanip>
 #include<ctime>
-#include<cmath>
-#include<algorithm>
-#include<vector>
-#include<string>
-#include<cstdlib>
-#include<Windows.h>
 #include "glut.h"
 
 using namespace std;
@@ -97,7 +89,7 @@ bool in_figure1(Point& a)
 bool in_figure2(Point& a)
 {
 
-	if ((a.getX() >= (- Pi / 5)) && (a.getX() <= (Pi / 5)) && (0 <= a.getY() && a.getY() <= (1-(sin(a.getX()) / cos(a.getX())))/ (1 + (sin(a.getX()) / cos(a.getX())))))
+	if ((a.getX() >= (-Pi / 5)) && (a.getX() <= (Pi / 5)) && (0 <= a.getY() && a.getY() <= (1 - (sin(a.getX()) / cos(a.getX()))) / (1 + (sin(a.getX()) / cos(a.getX())))))
 	{
 		return true;
 	}
@@ -106,7 +98,7 @@ bool in_figure2(Point& a)
 
 bool in_figure3(Point& a)
 {
-	if (a.getX() >= 1 && a.getX() <= 2 && (a.getY() <= 0 && a.getY() >= (2 - 5 * a.getX()) / sqrt(4*pow(a.getX(), 2) + 9*a.getX())))
+	if (a.getX() >= 1 && a.getX() <= 2 && (a.getY() <= 0 && a.getY() >= (2 - 5 * a.getX()) / sqrt(4 * pow(a.getX(), 2) + 9 * a.getX())))
 	{
 		return true;
 	}
@@ -115,7 +107,7 @@ bool in_figure3(Point& a)
 
 bool in_figure4(Point& a)
 {
-	if (a.getX() >= -2 && a.getX() <= 3 && a.getY() >= 0 && a.getY() <= (1 / (1+pow(e,2))))
+	if (a.getX() >= -2 && a.getX() <= 3 && a.getY() >= 0 && a.getY() <= (1 / (1 + pow(e, 2))))
 	{
 		return true;
 	}
@@ -246,7 +238,7 @@ int main(int argc, char** argv)
 	switch (n)
 	{
 	case 1:
-		glutInitWindowSize(1000, 1000);        
+		glutInitWindowSize(1000, 1000);
 		glutCreateWindow("Picture 1");
 		init();
 		glutDisplayFunc(display);
@@ -254,7 +246,7 @@ int main(int argc, char** argv)
 		glutMainLoop();
 
 	case 2:
-		glutInitWindowSize(1000, 1000);        
+		glutInitWindowSize(1000, 1000);
 		glutCreateWindow("Picture 2");
 		init();
 		glutDisplayFunc(display);
@@ -262,7 +254,7 @@ int main(int argc, char** argv)
 		glutMainLoop();
 
 	case 3:
-		glutInitWindowSize(1000, 1000);         
+		glutInitWindowSize(1000, 1000);
 		glutCreateWindow("Picture 3");
 		init();
 		glutDisplayFunc(display);
@@ -270,7 +262,7 @@ int main(int argc, char** argv)
 		glutMainLoop();
 
 	case 4:
-		glutInitWindowSize(1000, 1000);        
+		glutInitWindowSize(1000, 1000);
 		glutCreateWindow("Picture 4");
 		init();
 		glutDisplayFunc(display);
