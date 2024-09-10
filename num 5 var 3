@@ -1,17 +1,13 @@
 #include <iostream>
 #include <cmath>
-#include <math.h>
 #include <algorithm>
-#include <cstdio>
 #include <iomanip>
 #include <algorithm>
-#include"glut.h"
+#include "glut.h"
 // розовая линия конь
 // бирюзовая линия король
 // желтый квадрат начало пути 
 // зеленый квадрат король, красный конь, задание про два хода 
-#define ld long double
-#define ll long long
 
 using namespace std;
 
@@ -24,10 +20,10 @@ int ANS_2_1[int(1e4)];
 int ANS_2_2[int(1e4)];
 int SX, SY;
 
-bool IsIn(int A[], int x) 
+bool IsIn(int A[], int x)
 {
     int i = 0;
-    while (A[i] != -1) 
+    while (A[i] != -1)
     {
         if (A[i] == x)
             return true;
@@ -36,7 +32,7 @@ bool IsIn(int A[], int x)
     return false;
 }
 // функция которая преобразует двумерный массив в одномерные координаты
-int ind_dg(int i, int j, int m) 
+int ind_dg(int i, int j, int m)
 {
     return i * m + j;
 }
@@ -68,7 +64,7 @@ void display()
             glVertex2f(x, y);
             glVertex2f(x + sizes, y);
 
-            if (i == SX && j == SY) 
+            if (i == SX && j == SY)
             {
                 glColor3f(1.0, 1.0, 0.0);
                 glVertex2f(x + 0.04, y + 0.04);
@@ -116,10 +112,9 @@ void display()
                 glVertex2f(x + sizes - 0.015, y + 0.015);
             }
 
-            //------------------------------------------------------------------
             glColor3f(1.0, 0.0, 0.75);
             int ind = 0;
-            while (ANS_2_1[ind + 1] != -1) 
+            while (ANS_2_1[ind + 1] != -1)
             {
                 glBegin(GL_LINES);
                 glVertex2f(-(sizes * m * 0.8) + sizes * (ANS_2_1[ind] % m) + ((ANS_2_1[ind] / m) + 1) * 0.5 * sizes + 0.4 * sizes,
@@ -132,7 +127,7 @@ void display()
 
             glColor3f(0.0, 1.0, 1.0);
             ind = 0;
-            while (ANS_2_2[ind + 1] != -1) 
+            while (ANS_2_2[ind + 1] != -1)
             {
                 glBegin(GL_LINES);
                 glVertex2f(-(sizes * m * 0.8) + sizes * (ANS_2_2[ind] % m) + ((ANS_2_2[ind] / m) + 1) * 0.5 * sizes + 0.6 * sizes,
@@ -150,16 +145,16 @@ void display()
 }
 
 //функция проверки корректности координат
-bool check(int n, int m, int i, int j) 
+bool check(int n, int m, int i, int j)
 {
     if (i >= n || i < 0 || j >= m || j < 0)
         return false;
     return true;
 }
 // функция вывода пути
-void path_output(int n, int m, int* path, int i) 
+void path_output(int n, int m, int* path, int i)
 {
-    if (path[i] != -1) 
+    if (path[i] != -1)
     {
         i = path[i];
         path_output(n, m, path, i);
@@ -167,15 +162,15 @@ void path_output(int n, int m, int* path, int i)
     }
 }
 // алгоритм поиска BFS
-void sf_horse(int n, int m) 
+void BFS_Horse(int n, int m)
 {
     // переменные для начла и конца
     int s, f;
     int s_x, s_y, f_x, f_y;
-    cout << "\n    HORSE   \n";
-    cout << "Input N(row), N(column) of start: ";
+    cout << "\nКонь\n";
+    cout << "Введите позицию старта: ";
     cin >> s_x >> s_y;
-    cout << "Input N(row), N(column) of finish: ";
+    cout << "Введите позицию финиша: ";
     cin >> f_x >> f_y;
     s_x--;
     s_y--;
@@ -183,29 +178,29 @@ void sf_horse(int n, int m)
     f_y--;
     if (!check(n, m, s_x, s_y))
     {
-        cout << "Wrong input\n";
+        cout << "Неверные входные данные\n";
         return;
     }
-    if (!check(n, m, f_x, f_y)) 
+    if (!check(n, m, f_x, f_y))
     {
-        cout << "Wrong input\n";
+        cout << "Неверные входные данные\n";
         return;
     }
     int Shag[24] = { 1, -3,      1, 2,       -1, 3,     -1, -2,
                      2, 1,       2, -3,      -2, 3,     -2,-1,
                      3, -1,      3, -2,      -3, 1,     -3, 2 };
     int* G = new int[n * n * m * m];
-    for (int i = 0; i < n * n * m * m; i++) 
+    for (int i = 0; i < n * n * m * m; i++)
     {
         G[i] = 0;
     }
     for (int i = 0; i < n; i++)
     {
-        for (int j = 0; j < m; j++) 
+        for (int j = 0; j < m; j++)
         {
-            for (int k = 0; k < 12; k++) 
+            for (int k = 0; k < 12; k++)
             {
-                if (check(n, m, i + Shag[2 * k], j + Shag[2 * k + 1])) 
+                if (check(n, m, i + Shag[2 * k], j + Shag[2 * k + 1]))
                 {
                     G[ind_dg(ind_dg(i, j, m), ind_dg(i + Shag[2 * k], j + Shag[2 * k + 1], m), m * n)] = 1;
                 }
@@ -218,7 +213,7 @@ void sf_horse(int n, int m)
     int* Mark = new int[n * m];
     int* Len = new int[n * m];
     int* path = new int[n * m];
-    for (int i = 0; i < n * m; i++) 
+    for (int i = 0; i < n * m; i++)
     {
         Mark[i] = 0;
         Len[i] = -1;
@@ -234,107 +229,7 @@ void sf_horse(int n, int m)
     {
         int tmp = Q[i1];
         i1++;
-        for (int i = 0; i < n * m; i++) 
-        {
-            if (G[ind_dg(tmp, i, n * m)]) 
-            {
-                if (Mark[i] == 0) {
-                    Mark[i] = 1;
-                    Q[i2] = i;
-                    i2++;
-                    Len[i] = Len[tmp] + 1;
-                    path[i] = tmp;
-                }
-            }
-        }
-    }
-    if (Len[f] != -1) 
-    {
-        cout << Len[f] + 1 << '\n';
-        int i = f;
-        int j = 0;
-        while (i != -1) 
-        {
-            ANS_2_1[j] = i;
-            i = path[i];
-            j++;
-        }
-        path_output(n, m, path, f);
-        cout << f;
-    }
-    else 
-    {
-        cout << "-1\n\n Nooo put!!!\n\n\n";
-    }
-}
-// алгоритм поиска BFS 
-void sf_king(int n, int m) 
-{
-    int s, f;
-    int s_x, s_y, f_x, f_y;
-    cout << "\n    KING   \n";
-    cout << "Input N(row), N(column) of start: ";
-    cin >> s_x >> s_y;
-    cout << "Input N(row), N(column) of finish: ";
-    cin >> f_x >> f_y;
-    s_x--;
-    s_y--;
-    f_x--;
-    f_y--;
-    if (!check(n, m, s_x, s_y))
-    {
-        cout << "Wrong input\n";
-        return;
-    }
-    if (!check(n, m, f_x, f_y)) 
-    {
-        cout << "Wrong input\n";
-        return;
-    }
-    int Shag[12] = { 1, 0,    -1, 0,
-                     0, -1,    1, -1,
-                     -1, 1,    0, 1 };
-    int* G = new int[n * n * m * m];
-    for (int i = 0; i < n * n * m * m; i++) 
-    {
-        G[i] = 0;
-    }
-    for (int i = 0; i < n; i++) 
-    {
-        for (int j = 0; j < m; j++) 
-        {
-            for (int k = 0; k < 6; k++) 
-            {
-                if (check(n, m, i + Shag[2 * k], j + Shag[2 * k + 1])) 
-                {
-                    G[ind_dg(ind_dg(i, j, m), ind_dg(i + Shag[2 * k], j + Shag[2 * k + 1], m), m * n)] = 1;
-                }
-            }
-        }
-    }
-    s = ind_dg(s_x, s_y, m);
-    f = ind_dg(f_x, f_y, m);
-    int res = 0;
-    int* Mark = new int[n * m];
-    int* Len = new int[n * m];
-    int* path = new int[n * m];
-    for (int i = 0; i < n * m; i++) 
-    {
-        Mark[i] = 0;
-        Len[i] = -1;
-        path[i] = -1;
-    }
-    Len[s] = 0;
-    Mark[s] = 1;
-    int* Q = new int[1e4];
-    int i1 = 0, i2 = 0;
-    Q[i1] = s;
-    i2 = 1;
-    while (i1 != i2)
-    {
-        int tmp = Q[i1];
-        i1++;
-        for (int i = 0; i < n * m; i++) 
+        for (int i = 0; i < n * m; i++)
         {
             if (G[ind_dg(tmp, i, n * m)])
             {
@@ -348,12 +243,112 @@ void sf_king(int n, int m)
             }
         }
     }
-    if (Len[f] != -1) 
+    if (Len[f] != -1)
     {
         cout << Len[f] + 1 << '\n';
         int i = f;
         int j = 0;
-        while (i != -1) 
+        while (i != -1)
+        {
+            ANS_2_1[j] = i;
+            i = path[i];
+            j++;
+        }
+        path_output(n, m, path, f);
+        cout << f;
+    }
+    else
+    {
+        cout << "-1\n\n Нет пути\n\n\n";
+    }
+}
+// алгоритм поиска BFS 
+void BFS_King(int n, int m)
+{
+    int s, f;
+    int s_x, s_y, f_x, f_y;
+    cout << "\nКороль\n";
+    cout << "Введите позицию старта: ";
+    cin >> s_x >> s_y;
+    cout << "Введите позицию финиша: ";
+    cin >> f_x >> f_y;
+    s_x--;
+    s_y--;
+    f_x--;
+    f_y--;
+    if (!check(n, m, s_x, s_y))
+    {
+        cout << "Неверные входные данные\n";
+        return;
+    }
+    if (!check(n, m, f_x, f_y))
+    {
+        cout << "Неверные входные данные\n";
+        return;
+    }
+    int Shag[12] = { 1, 0,    -1, 0,
+                     0, -1,    1, -1,
+                     -1, 1,    0, 1 };
+    int* G = new int[n * n * m * m];
+    for (int i = 0; i < n * n * m * m; i++)
+    {
+        G[i] = 0;
+    }
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < m; j++)
+        {
+            for (int k = 0; k < 6; k++)
+            {
+                if (check(n, m, i + Shag[2 * k], j + Shag[2 * k + 1]))
+                {
+                    G[ind_dg(ind_dg(i, j, m), ind_dg(i + Shag[2 * k], j + Shag[2 * k + 1], m), m * n)] = 1;
+                }
+            }
+        }
+    }
+    s = ind_dg(s_x, s_y, m);
+    f = ind_dg(f_x, f_y, m);
+    int res = 0;
+    int* Mark = new int[n * m];
+    int* Len = new int[n * m];
+    int* path = new int[n * m];
+    for (int i = 0; i < n * m; i++)
+    {
+        Mark[i] = 0;
+        Len[i] = -1;
+        path[i] = -1;
+    }
+    Len[s] = 0;
+    Mark[s] = 1;
+    int* Q = new int[1e4];
+    int i1 = 0, i2 = 0;
+    Q[i1] = s;
+    i2 = 1;
+    while (i1 != i2)
+    {
+        int tmp = Q[i1];
+        i1++;
+        for (int i = 0; i < n * m; i++)
+        {
+            if (G[ind_dg(tmp, i, n * m)])
+            {
+                if (Mark[i] == 0) {
+                    Mark[i] = 1;
+                    Q[i2] = i;
+                    i2++;
+                    Len[i] = Len[tmp] + 1;
+                    path[i] = tmp;
+                }
+            }
+        }
+    }
+    if (Len[f] != -1)
+    {
+        cout << Len[f] + 1 << '\n';
+        int i = f;
+        int j = 0;
+        while (i != -1)
         {
             ANS_2_2[j] = i;
             i = path[i];
@@ -364,7 +359,7 @@ void sf_king(int n, int m)
     }
     else
     {
-        cout << "-1\n\n Nooo put!!!\n\n\n";
+        cout << "-1\n\n Нет пути!\n\n\n";
     }
 }
 // шаг коня, их всего 6, если он корректный то значение равно 1
@@ -373,9 +368,9 @@ void step_horse(int n, int m, int s_x, int s_y, int* Mark)
     int Shag[24] = { 1, -3,      1, 2,       -1, 3,     -1, -2,
                      2, 1,       2, -3,      -2, 3,     -2,-1,
                      3, -1,      3, -2,      -3, 1,     -3, 2 };
-    for (int k = 0; k < 6; k++) 
+    for (int k = 0; k < 6; k++)
     {
-        if (check(n, m, s_y + Shag[2 * k], s_x + Shag[2 * k + 1])) 
+        if (check(n, m, s_y + Shag[2 * k], s_x + Shag[2 * k + 1]))
         {
             Mark[ind_dg(s_y + Shag[2 * k], s_x + Shag[2 * k + 1], m)] = 1;
         }
@@ -390,7 +385,7 @@ void step_king(int n, int m, int s_x, int s_y, int* Mark)
 
     for (int k = 0; k < 6; k++)
     {
-        if (check(n, m, s_y + Shag[2 * k], s_x + Shag[2 * k + 1])) 
+        if (check(n, m, s_y + Shag[2 * k], s_x + Shag[2 * k + 1]))
         {
             Mark[ind_dg(s_y + Shag[2 * k], s_x + Shag[2 * k + 1], m)] = 1;
         }
@@ -398,45 +393,45 @@ void step_king(int n, int m, int s_x, int s_y, int* Mark)
 }
 //функция выполняет операции по вычислению доступных ходов для фигур на шахматной доске
 //сначала проверяет данные на корректность, потом использует две предыдущие функции для шага
-void two_steps(int n, int m) 
+void two_steps(int n, int m)
 {
     int s_x, s_y;
-    cout << "\n    2 STEPS   \n";
-    cout << "Input N(row), N(column) of start: ";
+    cout << "\n2 Хода\n";
+    cout << "Введите позицию старта: ";
     cin >> s_x >> s_y;
     s_x--;
     s_y--;
     SX = s_x;
     SY = s_y;
-    if (!check(n, m, s_x, s_y)) 
+    if (!check(n, m, s_x, s_y))
     {
-        cout << "Wrong input\n";
+        cout << "Неверные входные данные\n";
         return;
     }
     // создается массив для отслеживая посещенных точек
     int* Mark = new int[n * m];
-    for (int i = 0; i < n * m; i++) 
+    for (int i = 0; i < n * m; i++)
     {
         Mark[i] = 0;
     }
-    cout << "HORSE \n";
+    cout << "Конь\n";
     //возможные ходы коня
     int Shag[24] = { 1, -3,      1, 2,       -1, 3,     -1, -2,
                      2, 1,       2, -3,      -2, 3,     -2,-1,
                      3, -1,      3, -2,      -3, 1,     -3, 2 };
 
-    for (int k = 0; k < 12; k++) 
+    for (int k = 0; k < 12; k++)
     {
-        if (check(n, m, s_y + Shag[2 * k], s_x + Shag[2 * k + 1])) 
+        if (check(n, m, s_y + Shag[2 * k], s_x + Shag[2 * k + 1]))
         {
             step_horse(n, m, s_y + Shag[2 * k], s_x + Shag[2 * k + 1], Mark);
         }
     }
     int j = 0;
     // добавление доступных ходов в массив
-    for (int i = 0; i < n * m; i++) 
+    for (int i = 0; i < n * m; i++)
     {
-        if (Mark[i]) 
+        if (Mark[i])
         {
             cout << i << ' ';
             ANS_1_1[j] = i;
@@ -449,7 +444,7 @@ void two_steps(int n, int m)
         Mark[i] = 0;
     }
     cout << '\n';
-    cout << "KING \n";
+    cout << "Король\n";
     //возможные ходы короля
     int Shag_k[12] = { 1, 0,    -1, 0,
                      0, -1,    1, -1,
@@ -464,9 +459,9 @@ void two_steps(int n, int m)
     }
     j = 0;
     // добавление доступных ходов в массив
-    for (int i = 0; i < n * m; i++) 
+    for (int i = 0; i < n * m; i++)
     {
-        if (Mark[i]) 
+        if (Mark[i])
         {
             cout << i << ' ';
             ANS_1_2[j] = i;
@@ -478,25 +473,26 @@ void two_steps(int n, int m)
 
 int main(int argc, char** argv)
 {
-    for (int i = 0; i < 1000; i++) 
+    setlocale(LC_ALL, "ru");
+    for (int i = 0; i < 1000; i++)
     {
         ANS_1_1[i] = -1;
         ANS_1_2[i] = -1;
         ANS_2_1[i] = -1;
         ANS_2_2[i] = -1;
     }
-    cout << "Input rows and clumns counts: ";
+    cout << "Введите кол-во строк и столбцов: ";
     cin >> n >> m;
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
     glutInitWindowSize(1000, 1000);
     glutInitWindowPosition(100, 100);
-    glutCreateWindow("LABA");
+    glutCreateWindow("laba7_num5");
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glLoadIdentity();
     glutDisplayFunc(display);
     two_steps(n, m);
-    sf_horse(n, m);
-    sf_king(n, m);
+    BFS_Horse(n, m);
+    BFS_King(n, m);
     glutMainLoop();
 }
